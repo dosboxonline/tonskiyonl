@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="/favicon.ico">
+	<meta name="theme-color" content="#121212">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+	<script async src="https://cdn.jsdelivr.net/npm/@webtor/player-sdk-js/dist/index.min.js"></script>
+	<style>
+html {
+overflow-y: scroll;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Verdana, Geneva, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+	min-height: 100vh;
+}
+
+
+h1 {
+    font-size: 28px;
+    margin-top: 0.8em;
+    margin-bottom: 0.3em;
+    color: #ff3d00;
+    text-align: center;
+}
+
+#search-container {
+    position: sticky;
+    top: 0px;
+    z-index: 1000;
+    background-color: #121212;
+    padding: 10px 0;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+body.single-movie #search-container {
+    position: static;
+    box-shadow: none;
+}
+
+
+#search {
+    width: 100%;
+    padding: 10px 35px 10px 10px;
+    border: 2px solid #ff3d00;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+#search-clear {
+    position: absolute;
+    right: 10px;
+    top: 46%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #ff3d00;
+    cursor: pointer;
+    display: none;
+    user-select: none;
+    z-index: 10;
+}
+
+#search-clear:hover {
+    color: #d32f2f;
+}
+
+
+    button {
+        padding: 10px 15px;
+        margin-left: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ff3d00;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #d32f2f;
+    }
+
+    #movies {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        padding: 20px;
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+.movie {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 10px;
+    width: 160px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+}
+
+.movie img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+}
+
+
+    .movie:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 0px 15px rgba(255, 61, 0, 0.7);
+    }
+
+    .movie div {
+        font-size: 18px;
+        margin-top: 5px;
+        color: #ff3d00;
+    }
+
+    #player-container {
+        margin: 20px auto;
+        max-width: 900px;
+    }
+
+    .movie-details {
+        max-width: 900px;
+        margin: auto;
+        text-align: left;
+        padding: 20px;
+        background: #1e1e1e;
+        border-radius: 10px;
+    }
+
+    .movie-details img {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    .movie-details p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 10px 0;
+    }
+
+@media (max-width: 768px) {
+    #movies {
+        max-width: 90%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+
+    .movie {
+        width: 45%;
+    }
+}
+
+@media (max-width: 480px) {
+    #movies {
+        max-width: 95%;
+    }
+
+    .movie {
+        width: 47%;
+    }
+}
+
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff3d00;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d32f2f;
+}
+
+@media (max-width: 480px) {
+    #search-container {
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #search {
+        flex-grow: 1;
+        width: 154% !important;
+        max-width: none !important;
+        padding: 12px;
+        border: 2px solid #ff3d00;
+        border-radius: 5px;
+        background-color: #1e1e1e;
+        color: white;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+	
+	#search-clear {
+	margin-right: -52% !important;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #ff3d00;
+    cursor: pointer;
+    display: none;
+    user-select: none;
+    z-index: 10;
+}
+	
+    button {
+        padding: 12px 15px;
+        border-radius: 5px;
+        background-color: #ff3d00;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+}
+
+.movie-page {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.movie-info {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.movie-info p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 5px 0;
+}
+
+.movie-description {
+    text-align: justify;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.movie-poster {
+    width: 150px;
+    border-radius: 10px;
+}
+
+#player-container {
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.movies-link {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background: #ff3d00;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 200px;
+}
+
+.movies-link:hover {
+    background: #d32f2f;
+}
+
+@media (max-width: 600px) {
+    .movie-page {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .movie-poster {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .movie-info {
+        text-align: center;
+    }
+
+    .movie-description {
+        text-align: justify;
+    }
+}
+
+
+
+</style>
+
+	
+	
+    <script>
+let currentPage = 2;
+let isLoading = false;
+let allLoaded = false;
+let enableInfiniteScroll = false;
+let isSearchMode = false;
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            createSearchBar();
+            if (window.location.pathname !== "/") {
+                loadMovieFromURL();
+            } else {
+                loadMovieList();
+            }
+        });
+
+function createSearchBar() {
+    let searchContainer = document.createElement("div");
+    searchContainer.id = "search-container";
+
+    let searchWrapper = document.createElement("div");
+    searchWrapper.style.position = "relative";
+    searchWrapper.style.display = "inline-block";
+    searchWrapper.style.width = "50%";
+    searchWrapper.style.maxWidth = "500px";
+
+    let searchBar = document.createElement("input");
+    searchBar.type = "text";
+    searchBar.id = "search";
+    searchBar.placeholder = "Enter movie title...";
+    searchBar.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            searchMovies();
+        }
+    });
+
+    let clearBtn = document.createElement("span");
+    clearBtn.id = "search-clear";
+    clearBtn.innerHTML = "&times;";
+    clearBtn.onclick = () => {
+        searchBar.value = "";
+        clearBtn.style.display = "none";
+        searchBar.focus();
+    };
+
+    searchBar.addEventListener("input", () => {
+        clearBtn.style.display = searchBar.value ? "block" : "none";
+    });
+
+    searchWrapper.appendChild(searchBar);
+    searchWrapper.appendChild(clearBtn);
+
+    let searchButton = document.createElement("button");
+    searchButton.innerText = "Search";
+    searchButton.onclick = searchMovies;
+
+    searchContainer.appendChild(searchWrapper);
+    searchContainer.appendChild(searchButton);
+
+    document.body.insertBefore(searchContainer, document.getElementById("content"));
+}
+
+
+
+function searchMovies() {
+    let query = document.getElementById("search").value.trim();
+
+    if (query === "") {
+        window.location.href = "/";
+        return;
+    }
+
+    if (query.length < 3) return;
+
+    enableInfiniteScroll = false;
+    isSearchMode = true;
+
+    fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${query}&limit=50&sort_by=download_count`)
+        .then(response => response.json())
+        .then(data => {
+            let movies = data.data.movies;
+
+            if (!movies || movies.length === 0) {
+                document.getElementById("content").innerHTML = "<h1>Movies not found</h1>";
+                return;
+            }
+
+            let html = `<h1>Search Results for: ${query}</h1><div id='movies'>`;
+            movies.forEach(movie => {
+                html += `
+                    <div class="movie" onclick="navigateToMovie(${movie.id})">
+                        <img src="${movie.medium_cover_image}" alt="${movie.title}">
+                        <div>${movie.title} (${movie.year})</div>
+                    </div>
+                `;
+            });
+            html += "</div>";
+            document.getElementById("content").innerHTML = html;
+        })
+        .catch(() => {
+            document.getElementById("content").innerHTML = "<h1>Movie not found</h1>";
+            enableInfiniteScroll = false;
+            isSearchMode = false;
+        });
+}
+
+
+
+
+function navigateToMovie(movieId) {
+    window.location.href = `/movie-${movieId}.html`;
+}
+
+
+
+        window.addEventListener("popstate", function () {
+            if (window.location.pathname !== "/") {
+                loadMovieFromURL();
+            } else {
+                loadMovieList();
+            }
+        });
+
+function loadMovieFromURL() {
+    let path = window.location.pathname.match(/movie-(\d+)\.html/);
+    if (!path) {
+        showError();
+        return;
+    }
+
+    let movieId = path[1];
+    
+
+    loadMovieById(movieId);
+	enableInfiniteScroll = false;
+
+}
+
+
+function fetchMovieByTitle(title) {
+    let url = `https://yts.mx/api/v2/list_movies.json?query_term=${encodeURIComponent(title)}&limit=1`;
+    
+    
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            
+
+            if (data.data.movies && data.data.movies.length > 0) {
+                let movie = data.data.movies[0];
+                
+                loadMovieById(movie.id);
+            } else {
+                
+
+                let simpleTitle = title
+                    .replace(/:/g, "")
+                    .replace(/&/g, "and")
+                    .replace(/\(.*?\)/g, "")
+                    .trim();
+
+                
+                fetchMovieByTitle(simpleTitle);
+            }
+        })
+        .catch(error => {
+            
+            showError();
+        });
+}
+
+
+
+function loadMovieById(movieId) {
+    
+
+    fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${movieId}&with_images=true&with_cast=true`)
+        .then(response => response.json())
+        .then(data => {
+            
+
+            if (data.data.movie) {
+                let movie = data.data.movie;
+
+                let cast = movie.cast ? movie.cast.map(actor => actor.name).join(", ") : "N/A";
+                let genres = movie.genres ? movie.genres.join(", ") : "";
+let description = movie.description_full 
+    ? `<p class="movie-description"><strong>Description:</strong> ${movie.description_full}</p>` 
+    : "";
+
+                let rating = movie.rating ? `${movie.rating}` : "N/A";
+
+let trackers = [
+  "udp://tracker.openbittorrent.com:6969/announce",
+  "udp://tracker.opentrackr.org:1337/announce",
+  "udp://tracker.torrent.eu.org:451/announce",
+  "udp://tracker.moeking.me:6969/announce",
+  "udp://opentracker.i2p.rocks:6969/announce",
+  "udp://exodus.desync.com:6969/announce",
+  "udp://tracker.cyberia.is:6969/announce",
+  "udp://ipv4.tracker.harry.lu:80/announce",
+  "http://tracker.bt4g.com:2095/announce",
+  "http://tracker.files.fm:6969/announce"
+
+                ];
+                let trackerParams = trackers.map(tracker => `&tr=${encodeURIComponent(tracker)}`).join("");
+
+                let bestTorrent = movie.torrents.reduce((max, torrent) => 
+                    (torrent.peers > (max?.peers || 0)) ? torrent : max, null);
+
+                let magnetLink = bestTorrent ? 
+                    `magnet:?xt=urn:btih:${bestTorrent.hash}&dn=${encodeURIComponent(movie.title)}${trackerParams}`
+                    : "";
+
+                let screenshot = movie.large_screenshot_image2 || movie.large_screenshot_image1 || movie.large_screenshot_image3 || movie.medium_cover_image;
+
+let movieHtml = `
+    <h1>${movie.title}</h1>
+    <div id="player-container"></div>
+    <div class="movie-page">
+        <img src="${movie.medium_cover_image}" alt="${movie.title} (${movie.year})" class="movie-poster">
+        <div class="movie-info">
+            <p><strong>Released:</strong> ${movie.year}</p>
+            <p><strong>Genre:</strong> ${genres}</p>
+            <p><strong>Top Cast:</strong> ${cast}</p>
+            <p><strong>Rating:</strong> ${rating}</p>
+            ${description}
+        </div>
+    </div>
+    <a href="/" class="movies-link">Movies List</a>
+`;
+
+
+
+                document.getElementById("content").innerHTML = movieHtml;
+
+document.title = `Watch Free 🎦 ${movie.title} (${movie.year})`;
+
+let metaDesc = [];
+if (movie.year) metaDesc.push(`Released: ${movie.year}`);
+if (movie.genres && movie.genres.length) metaDesc.push(`Genre: ${movie.genres.join(", ")}`);
+if (movie.cast && movie.cast.length) {
+    let topCast = movie.cast.map(actor => actor.name).join(", ");
+    metaDesc.push(`Top Cast: ${topCast}`);
+}
+
+let descriptionContent = metaDesc.join(". ") + ".";
+
+let metaTag = document.querySelector("meta[name='description']");
+if (metaTag) {
+    metaTag.setAttribute("content", descriptionContent);
+} else {
+    let newMeta = document.createElement("meta");
+    newMeta.name = "description";
+    newMeta.content = descriptionContent;
+    document.head.appendChild(newMeta);
+}
+
+let oldJsonLd = document.querySelector("script[type='application/ld+json']");
+if (oldJsonLd) {
+    oldJsonLd.remove();
+}
+
+let movieUrl = window.location.href;
+
+let jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Movie",
+            "name": movie.title,
+            "datePublished": movie.year ? String(movie.year) : undefined,
+            "description": movie.description_full || descriptionContent,
+            "genre": movie.genres || [],
+            "image": movie.large_cover_image,
+            "url": movieUrl
+        },
+        {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "MOV.ONL 🎦 Watch Free Movies Online",
+                    "item": window.location.origin
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": `Watch Free 🎦 ${movie.title} (${movie.year})`,
+                    "item": movieUrl
+                }
+            ]
+        }
+    ]
+};
+
+
+if (movie.cast && movie.cast.length) {
+    jsonLd["@graph"][0].actor = movie.cast.map(actor => ({
+        "@type": "Person",
+        "name": actor.name
+    }));
+}
+
+if (movie.rating && movie.rating > 0) {
+    let ratingCount = movie.like_count || movie.download_count || 1;
+
+    jsonLd["@graph"][0].aggregateRating = {
+        "@type": "AggregateRating",
+        "ratingValue": String(movie.rating),
+        "bestRating": "10",
+        "worstRating": "0",
+        "ratingCount": String(ratingCount)
+    };
+}
+
+
+
+let script = document.createElement("script");
+script.type = "application/ld+json";
+script.textContent = JSON.stringify(jsonLd, null, 2);
+document.head.appendChild(script);
+
+
+function addMetaTag(name, content, property = false) {
+    if (!content) return;
+
+    let selector = property ? `meta[property='${name}']` : `meta[name='${name}']`;
+    let meta = document.querySelector(selector);
+
+    if (meta) {
+        meta.setAttribute("content", content);
+    } else {
+        let newMeta = document.createElement("meta");
+        if (property) {
+            newMeta.setAttribute("property", name);
+        } else {
+            newMeta.setAttribute("name", name);
+        }
+        newMeta.setAttribute("content", content);
+        document.head.appendChild(newMeta);
+    }
+}
+
+document.querySelectorAll("meta[property^='og:'], meta[name^='twitter:']").forEach(meta => meta.remove());
+
+let movieTitle = `Watch Free 🎦 ${movie.title} (${movie.year})`;
+let metaDescTag = document.querySelector("meta[name='description']");
+let movieDescription = movie.description_full || descriptionContent;
+let movieImage = movie.large_cover_image || movie.medium_cover_image;
+
+addMetaTag("og:title", movieTitle, true);
+addMetaTag("og:description", movieDescription, true);
+addMetaTag("og:image", movieImage, true);
+addMetaTag("og:url", movieUrl, true);
+addMetaTag("og:type", "video.movie", true);
+addMetaTag("og:site_name", "MOV.ONL 🎦 Watch Free Movies Online", true);
+
+addMetaTag("twitter:card", "summary");
+addMetaTag("twitter:title", movieTitle);
+addMetaTag("twitter:description", movieDescription);
+addMetaTag("twitter:image", movieImage);
+addMetaTag("twitter:url", movieUrl);
+
+
+
+
+
+
+                if (magnetLink) {
+                    setTimeout(() => loadWebtorPlayer(magnetLink, screenshot), 100);
+                }
+            } else {
+                
+                showError();
+            }
+        })
+        .catch(error => {
+            
+            showError();
+        });
+}
+
+
+
+function displayMovie(movie, cast, genres, description, rating) {
+    let movieHtml = `
+        <h1>Watch Free 🎦 ${movie.title}</h1>
+        <img src="${movie.medium_cover_image}" alt="${movie.title}">
+    `;
+
+    if (genres) {
+        movieHtml += `<p><strong>Genre:</strong> ${genres}</p>`;
+    }
+
+    if (cast) {
+        movieHtml += `<p><strong>Top Cast:</strong><br>${cast}</p>`;
+    }
+
+    if (rating) {
+        movieHtml += rating;
+    }
+
+    movieHtml += description;
+    movieHtml += `<button onclick="goBack()">Movies List</button>`;
+
+    document.getElementById("content").innerHTML = movieHtml;
+}
+
+
+function showError() {
+    document.getElementById("content").innerHTML = "<h1>Movies not found</h1><button onclick='goBack()'>Movies List</button>";
+}
+
+        function loadMovieList() {
+		
+
+    document.title = "MOV.ONL 🎦 Watch Free Movies Online";
+
+
+    let mainMetaDescription = "Stream thousands of movies online in HD, 4K, and more. Watch instantly in your browser or download. New releases added daily!";
+
+
+    let existingMeta = document.querySelector("meta[name='description']");
+    if (existingMeta) {
+        existingMeta.setAttribute("content", mainMetaDescription);
+    } else {
+        let newMeta = document.createElement("meta");
+        newMeta.name = "description";
+        newMeta.content = mainMetaDescription;
+        document.head.appendChild(newMeta);
+		enableInfiniteScroll = true;
+currentPage = 2;
+allLoaded = false;
+
+    }
+
+		
+            document.getElementById("content").innerHTML = "<h1>MOV.ONL 🎦 Watch Free Movies Online</h1><p>Loading movies...</p>";
+			enableInfiniteScroll = true;
+isSearchMode = false;
+currentPage = 2;
+allLoaded = false;
+
+            fetch("https://yts.mx/api/v2/list_movies.json?sort_by=year&order_by=desc&limit=50&page=1")
+                .then(response => response.json())
+                .then(data => {
+                    let html = "<h1>MOV.ONL 🎦 Watch Free Movies Online</h1><div id='movies'>";
+data.data.movies.forEach(movie => {
+    html += `
+        <div class="movie" onclick="navigateToMovie(${movie.id})">
+            <img src="${movie.medium_cover_image}" alt="${movie.title}">
+            <div>${movie.title}</div>
+        </div>
+    `;
+});
+
+                    html += "</div>";
+                    document.getElementById("content").innerHTML = html;
+                });
+        }
+
+function goBack() {
+    window.location.href = "/";
+}
+
+function loadWebtorPlayer(magnetLink, screenshot) {
+    
+
+    let playerContainer = document.getElementById("player-container");
+    if (!playerContainer) return;
+
+    let containerWidth = playerContainer.clientWidth || window.innerWidth;
+
+
+    let img = new Image();
+    img.src = screenshot;
+    img.onload = function () {
+        let aspectRatio = img.naturalWidth / img.naturalHeight;
+        let playerHeight = Math.round(containerWidth / aspectRatio);
+
+        playerContainer.style.height = playerHeight + "px";
+
+        let player = document.createElement("div");
+        player.id = "webtor-player";
+        playerContainer.appendChild(player);
+
+        window.webtor = window.webtor || [];
+        window.webtor.push({
+            id: "webtor-player",
+            magnet: magnetLink,
+            width: "100%",
+            height: playerHeight + "px",
+            poster: screenshot,
+            features: {
+                continue: true,
+                autoplay: true,
+                subtitles: false,
+				embed: false,
+            },
+        });
+    };
+
+    img.onerror = function () {
+        
+        let playerHeight = Math.round(containerWidth / (16 / 9));
+        playerContainer.style.height = playerHeight + "px";
+
+
+        let player = document.createElement("div");
+        player.id = "webtor-player";
+        playerContainer.appendChild(player);
+
+
+        window.webtor = window.webtor || [];
+        window.webtor.push({
+            id: "webtor-player",
+            magnet: magnetLink,
+            width: "100%",
+            height: playerHeight + "px",
+            features: {
+                continue: true,
+                autoplay: true,
+                subtitles: true,
+            },
+        });
+    };
+}
+
+
+function adjustPlayerHeight() {
+    let screenshot = document.getElementById("screenshot-temp");
+    if (screenshot) {
+        let height = screenshot.naturalHeight;
+        let playerContainer = document.getElementById("player-container");
+        if (playerContainer) {
+            playerContainer.style.height = height + "px";
+        }
+        screenshot.remove();
+    }
+}
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    let searchContainer = document.getElementById("search-container");
+
+    if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
+        searchContainer.style.position = "sticky";
+        searchContainer.style.top = "0";
+        searchContainer.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.3)";
+    } else {
+
+        searchContainer.style.position = "static";
+        searchContainer.style.boxShadow = "none";
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    function hideBrokenMovies() {
+        document.querySelectorAll(".movie img").forEach(img => {
+            let movie = img.closest(".movie");
+
+            img.onerror = function () {
+                movie.style.display = "none";
+            };
+
+            img.onload = function () {
+                movie.style.display = "block";
+            };
+
+            if (img.complete && img.naturalWidth === 0) {
+                img.onerror();
+            }
+        });
+    }
+
+    let observer = new MutationObserver(() => {
+        hideBrokenMovies();
+    });
+
+    let content = document.getElementById("content");
+    if (content) {
+        observer.observe(content, { childList: true, subtree: true });
+    }
+
+    hideBrokenMovies();
+});
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    let searchContainer = document.getElementById("search-container");
+
+    if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
+        searchContainer.style.position = "sticky";
+        searchContainer.style.top = "0";
+        searchContainer.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.3)";
+    } else {
+        searchContainer.style.position = "static";
+        searchContainer.style.boxShadow = "none";
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    let searchInput = document.getElementById("search");
+    let searchButton = document.querySelector("button");
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    searchButton.addEventListener("click", function () {
+        scrollToTop();
+    });
+
+    searchInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            scrollToTop();
+        }
+    });
+});
+
+function loadNextPage() {
+    if (isLoading || allLoaded || !enableInfiniteScroll) return;
+    isLoading = true;
+
+    fetch(`https://yts.mx/api/v2/list_movies.json?sort_by=year&order_by=desc&limit=50&page=${currentPage}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.data.movies || data.data.movies.length === 0) {
+                allLoaded = true;
+                return;
+            }
+
+            const moviesGrid = document.getElementById("movies");
+            if (!moviesGrid) return;
+
+            data.data.movies.forEach(movie => {
+                const movieEl = document.createElement("div");
+                movieEl.className = "movie";
+                movieEl.onclick = () => navigateToMovie(movie.id);
+                movieEl.innerHTML = `
+                    <img src="${movie.medium_cover_image}" alt="${movie.title}">
+                    <div>${movie.title}</div>
+                `;
+                moviesGrid.appendChild(movieEl);
+            });
+
+            currentPage++;
+            isLoading = false;
+        })
+        .catch(() => {
+            isLoading = false;
+        });
+}
+
+window.addEventListener("scroll", () => {
+    if (!enableInfiniteScroll || isSearchMode) return;
+
+    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 800)) {
+        loadNextPage();
+    }
+});
+
+    </script>
+</head>
+<body>
+    <div id="content"></div>
+<script defer src="https://prosecutorremarkablegodforsaken.com/74/81/47/748147ff05b9281415d45661f4d2b261.js"></script>
+<script defer src="https://prosecutorremarkablegodforsaken.com/44/dc/b6/44dcb64a60afc25afbf3eb5a61fe2ab2.js"></script>
+</body>
+</html>
