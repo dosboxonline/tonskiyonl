@@ -1,4 +1,18 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://free.mov.onl/sitemap.txt
+Sitemap: https://mov.onl/sitemap.txt
+
+Sitemap: https://mov.onl/sitemap-1.txt
+
+Sitemap: https://mov.onl/sitemap-2.txt
+
+Sitemap: https://mov.onl/sitemap-3.txt
+
+Sitemap: https://mov.onl/sitemap-4.txt
+
+Sitemap: https://mov.onl/sitemap-5.txt
+
+Sitemap: https://mov.onl/sitemap-6.txt
+
+Sitemap: https://mov.onl/sitemap-7.txt

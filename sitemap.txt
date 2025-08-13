@@ -1,7 +1,7 @@
-https://free.mov.onl/sitemap-1.txt
-https://free.mov.onl/sitemap-2.txt
-https://free.mov.onl/sitemap-3.txt
-https://free.mov.onl/sitemap-4.txt
-https://free.mov.onl/sitemap-5.txt
-https://free.mov.onl/sitemap-6.txt
-https://free.mov.onl/sitemap-7.txt
+https://mov.onl/sitemap-1.txt
+https://mov.onl/sitemap-2.txt
+https://mov.onl/sitemap-3.txt
+https://mov.onl/sitemap-4.txt
+https://mov.onl/sitemap-5.txt
+https://mov.onl/sitemap-6.txt
+https://mov.onl/sitemap-7.txt
