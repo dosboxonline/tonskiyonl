@@ -556,23 +556,14 @@ let trackers = [
   "udp://htz3.noho.st:6969/announce",
   "udp://new-line.net:6969/announce"
 ];
-// Ищем 1080p BluRay
-let bluRay1080 = movie.torrents.find(t => 
-    t.quality === "1080p" && t.type.toLowerCase() === "bluray"
-);
+                let trackerParams = trackers.map(tracker => `&tr=${encodeURIComponent(tracker)}`).join("");
 
-let bestTorrent;
-if (bluRay1080) {
-    // Если есть BluRay 1080p — берём его
-    bestTorrent = bluRay1080;
-} else {
-    // Иначе по сумме seeds + peers
-    bestTorrent = movie.torrents.reduce((max, torrent) => {
-        const currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
-        const maxScore = (max?.seeds || 0) + (max?.peers || 0);
-        return currentScore > maxScore ? torrent : max;
-    }, null);
-}
+                let bestTorrent = movie.torrents.reduce((max, torrent) => {
+    const currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
+    const maxScore = (max?.seeds || 0) + (max?.peers || 0);
+    return currentScore > maxScore ? torrent : max;
+}, null);
+
                 let magnetLink = bestTorrent ? 
                     `magnet:?xt=urn:btih:${bestTorrent.hash}&dn=${encodeURIComponent(movie.title)}${trackerParams}`
                     : "";
