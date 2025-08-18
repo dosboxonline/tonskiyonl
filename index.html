@@ -722,11 +722,14 @@ if (bestTorrent && bestTorrent.hash) {
     console.log("Torrent hash:", hash);
 
     const magnetLink = `magnet:?xt=urn:btih:${hash}`;
-
     loadWebtorPlayer(magnetLink, screenshot);
 } else {
     showError();
 }
+})
+.catch(error => {
+    showError();
+});
 
 function displayMovie(movie, cast, genres, description, rating) {
     let movieHtml = `
