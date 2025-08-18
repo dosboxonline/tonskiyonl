@@ -717,20 +717,14 @@ addMetaTag("twitter:description", movieDescription);
 addMetaTag("twitter:image", movieImage);
 addMetaTag("twitter:url", movieUrl);
 
-if (magnetLink) {
-    setTimeout(function () {
-        loadWebtorPlayer(magnetLink, screenshot);
-    }, 1500);
-}
-            } else {
-                
-                showError();
-            }
-        })
-        .catch(error => {
-            
-            showError();
-        });
+if (bestTorrent && bestTorrent.hash) {
+    const hash = bestTorrent.hash.toLowerCase();
+    console.log("Torrent hash:", hash);
+
+    const magnetLink = `magnet:?xt=urn:btih:${hash}`;
+    loadWebtorPlayer(magnetLink, screenshot);
+} else {
+    showError();
 }
 
 function displayMovie(movie, cast, genres, description, rating) {
