@@ -8,8 +8,7 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-	<script src="https://cdn.jsdelivr.net/npm/@webtor/embed-sdk-js/dist/index.min.js"
-        onload="window.dispatchEvent(new Event('webtorready'))"></script>
+	<script async src="https://cdn.jsdelivr.net/npm/@webtor/player-sdk-js/dist/index.min.js"></script>
 	<style>
 html {
 overflow-y: scroll;
@@ -519,39 +518,103 @@ let description = movie.description_full
     ? `<p class="movie-description"><strong>Description:</strong> ${movie.description_full}</p>` 
     : "";
 
-let rating = movie.rating ? `${movie.rating}` : "N/A";
+                let rating = movie.rating ? `${movie.rating}` : "N/A";
 
-const torrentsAll = Array.isArray(movie.torrents) ? movie.torrents : [];
+let trackers = [
+"udp://exodus.desync.com:6969/announce",
+"udp://tracker.cyberia.is:6969/announce",
+"udp://open.stealth.si:80/announce",
+"udp://tracker.publichd.eu:6969/announ​ce",
+"udp://tracker.openbittorrent.com:80/announce",
+"udp://torrentclub.tech:6969/announce",
+"udp://tracker.prq.to:6969/announce",
+"udp://9.rarbg.to:2730/announce",
+"udp://tracker.qt.is:6969/announce",
+"udp://9.rarbg.to:2710/announce",
+"udp://tracker.pomf.se:80/announce",
+"udp://tracker.pirateparty.gr:6969/announce",
+"udp://tracker.1337x.org:80/annou​nce",
+"udp://9.rarbg.me:6969/announce",
+"udp://9.rarbg.me:2730/announce",
+"udp://tracker.port443.xyz:6969/announce",
+"udp://tracker.justseed.it:1337/announce",
+"udp://inferno.demonoid.pw:3418/announce",
+"udp://tracker.ex.ua:80/announce",
+"udp://tracker.moeking.me:6969/announce",
+"udp://ipv4.tracker.harry.lu:80/announce",
+"udp://open.demonii.com:1337/announce",
+"udp://retracker.lanta-net.ru:2710/announce",
+"udp://tracker.1337x.org:80/announce",
+"udp://zer0day.ch:1337/announce",
+"udp://tracker.yify-torrents.com:6969/announce",
+"udp://tracker.openbittorrent.com:6969/announce",
+"udp://tracker.mg64.net:6969/announce",
+"udp://open.demonii.si:1337/announce",
+"udp://11.rarbg.com:6969/announce",
+"udp://tracker.publichd.eu:6969/announce",
+"udp://tracker.0o.is:6969/announce",
+"udp://p4p.arenabg.ch:1337/announce",
+"udp://asnet.pw:2710/announce",
+"udp://9.rarbg.to:2770/announce",
+"udp://denis.stalker.upeer.me:6969/announce",
+"udp://tracker.opentrackr.org:1337/announce",
+"udp://tracker.ccc.de:80/announce",
+"udp://tracker.dler.org:6969/announce",
+"udp://tracker.cypherpunks.ru:6969/announce",
+"udp://bt.xxx-tracker.com:2710/announce",
+"udp://9.rarbg.me:2970/announce",
+"udp://tracker.trackerfix.com:80/announce",
+"udp://p4p.arenabg.com:1337/announce",
+"udp://9.rarbg.me:2740/announce",
+"udp://tracker.zer0day.to:1337/announce",
+"udp://tracker.vanitycore.co:6969/announce",
+"udp://tracker.police.maori.nz:6969/an​nounce",
+"udp://tracker.blackunicorn.xyz:6969/announce",
+"udp://ipv6.open-internet.nl:6969/announce",
+"udp://tracker.tiny-vps.com:6969/announce",
+"udp://tracker.torrent.eu.org:451/announce",
+"udp://tracker.yify-torrents.com:6969/​announce",
+"udp://tracker.publicbt.com:80/announce",
+"udp://tracker.open-internet.nl:6969/announce",
+"udp://tracker.police.maori.nz:6969/announce",
+"udp://11.rarbg.me:6969/announce",
+"udp://tracker.ds.is:6969/announce",
+"udp://glotorrents.pw:6969/announce",
+"udp://thetracker.org:80/announce",
+"udp://tracker.internetwarriors.net:1337/announce",
+"udp://tracker.coppersurfer.tk:6969/announce",
+"udp://twig.gs:6969/announce",
+"udp://9.rarbg.to:2720/announce",
+"udp://eddie4.nl:6969/announce",
+"udp://open.tracker.cl:1337/announce",
+"udp://shadowshq.yi.org:6969/announce",
+"udp://tracker.coppersurfer.tk:80/announce",
+"udp://9.rarbg.me:2770/announce",
+"udp://9.rarbg.me:2710/announce",
+"udp://denis.stalker.upeer.me:1337/announce",
+"udp://9.rarbg.to:2740/announce",
+"udp://tracker.leechers-paradise.org:6969/announce",
+"udp://ipv6.tracker.harry.lu:80/announce",
+"udp://public.popcorn-tracker.org:6969/announce",
+"udp://tracker.acg.gg:2710/announce",
+"udp://coppersurfer.tk:6969/announce",
+"udp://tracker.istole.it:80/announce",
+"udp://tracker.publicbt.com:6969/announce",
+"udp://9.rarbg.com:2710/announce"
+                ];
+                let trackerParams = trackers.map(tracker => `&tr=${encodeURIComponent(tracker)}`).join("");
 
-let filtered = torrentsAll.filter(t =>
-  t &&
-  typeof t.hash === "string" &&
-  (t.video_codec || "").toLowerCase() === "x264" &&
-  !/2160p|3d/i.test(String(t.quality || ""))
-);
+                let bestTorrent = movie.torrents.reduce((max, torrent) => {
+    const currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
+    const maxScore = (max?.seeds || 0) + (max?.peers || 0);
+    return currentScore > maxScore ? torrent : max;
+}, null);
 
-let bestTorrent = null;
+                let magnetLink = bestTorrent ? 
+                    `magnet:?xt=urn:btih:${bestTorrent.hash}&dn=${encodeURIComponent(movie.title)}${trackerParams}`
+                    : "";
 
-if (filtered.length > 0) {
-  bestTorrent = filtered.sort((a, b) => {
-    const scoreA = (a.seeds || 0) + (a.peers || 0);
-    const scoreB = (b.seeds || 0) + (b.peers || 0);
-
-    if (scoreA !== scoreB) {
-      return scoreB - scoreA;
-    }
-	
-    const rank = q => (/1080p/i.test(q) ? 1 : /720p/i.test(q) ? 2 : /480p/i.test(q) ? 3 : 4);
-    return rank(a.quality) - rank(b.quality);
-  })[0];
-}
-
-console.log("bestTorrent:", bestTorrent);
-
-let screenshot = movie.large_screenshot_image2 
-  || movie.large_screenshot_image1 
-  || movie.large_screenshot_image3 
-  || movie.medium_cover_image;
+                let screenshot = movie.large_screenshot_image2 || movie.large_screenshot_image1 || movie.large_screenshot_image3 || movie.medium_cover_image;
 
 let movieHtml = `
     <h1>${movie.title}</h1>
@@ -620,7 +683,7 @@ let jsonLd = {
                 {
                     "@type": "ListItem",
                     "position": 1,
-                    "name": "MOV.ONL 🎦 Watch Free Movies Online",
+                    "name": "MOV.ONL 🎦 Watch Free Movies Online in HD",
                     "item": window.location.origin
                 },
                 {
@@ -694,7 +757,7 @@ addMetaTag("og:description", movieDescription, true);
 addMetaTag("og:image", movieImage, true);
 addMetaTag("og:url", movieUrl, true);
 addMetaTag("og:type", "video.movie", true);
-addMetaTag("og:site_name", "MOV.ONL 🎦 Watch Free Movies Online", true);
+addMetaTag("og:site_name", "MOV.ONL 🎦 Watch Free Movies Online in HD", true);
 
 addMetaTag("twitter:card", "summary");
 addMetaTag("twitter:title", movieTitle);
@@ -702,23 +765,26 @@ addMetaTag("twitter:description", movieDescription);
 addMetaTag("twitter:image", movieImage);
 addMetaTag("twitter:url", movieUrl);
 
-if (bestTorrent && bestTorrent.hash) {
-    const hash = bestTorrent.hash.toLowerCase();
-    console.log("Torrent hash:", hash);
 
-    const magnetLink = `magnet:?xt=urn:btih:${hash}`;
-    loadWebtorPlayer(magnetLink, screenshot);
-} else {
-    showError();
-}
+
+
+
+
+                if (magnetLink) {
+                    setTimeout(() => loadWebtorPlayer(magnetLink, screenshot), 100);
+                }
             } else {
+                
                 showError();
             }
         })
         .catch(error => {
+            
             showError();
         });
-} 
+}
+
+
 
 function displayMovie(movie, cast, genres, description, rating) {
     let movieHtml = `
@@ -752,7 +818,7 @@ function showError() {
         function loadMovieList() {
 		
 
-    document.title = "MOV.ONL 🎦 Watch Free Movies Online";
+    document.title = "MOV.ONL 🎦 Watch Free Movies Online in HD";
 
 
     let mainMetaDescription = "Stream thousands of movies online in HD. Watch instantly in your browser or download. New releases added daily!";
@@ -773,7 +839,7 @@ allLoaded = false;
     }
 
 		
-            document.getElementById("content").innerHTML = "<h1>MOV.ONL 🎦 Watch Free Movies Online</h1><p>Loading movies...</p>";
+            document.getElementById("content").innerHTML = "<h1>MOV.ONL 🎦 Watch Free Movies Online in HD</h1><p>Loading movies...</p>";
 			enableInfiniteScroll = true;
 isSearchMode = false;
 currentPage = 2;
@@ -782,7 +848,7 @@ allLoaded = false;
             fetch("https://yts.mx/api/v2/list_movies.json?sort_by=year&order_by=desc&limit=50&page=1")
                 .then(response => response.json())
                 .then(data => {
-                    let html = "<h1>MOV.ONL 🎦 Watch Free Movies Online</h1><div id='movies'>";
+                    let html = "<h1>MOV.ONL 🎦 Watch Free Movies Online in HD</h1><div id='movies'>";
 data.data.movies.forEach(movie => {
     html += `
         <div class="movie" onclick="navigateToMovie(${movie.id})">
@@ -802,18 +868,26 @@ function goBack() {
 }
 
 function loadWebtorPlayer(magnetLink, screenshot) {
+    
+
     let playerContainer = document.getElementById("player-container");
     if (!playerContainer) return;
 
     let containerWidth = playerContainer.clientWidth || window.innerWidth;
-    let playerHeight = Math.round(containerWidth / (16 / 9));
-    playerContainer.style.height = playerHeight + "px";
 
-    let player = document.createElement("div");
-    player.id = "webtor-player";
-    playerContainer.appendChild(player);
 
-    function start() {
+    let img = new Image();
+    img.src = screenshot;
+    img.onload = function () {
+        let aspectRatio = img.naturalWidth / img.naturalHeight;
+        let playerHeight = Math.round(containerWidth / aspectRatio);
+
+        playerContainer.style.height = playerHeight + "px";
+
+        let player = document.createElement("div");
+        player.id = "webtor-player";
+        playerContainer.appendChild(player);
+
         window.webtor = window.webtor || [];
         window.webtor.push({
             id: "webtor-player",
@@ -825,18 +899,35 @@ function loadWebtorPlayer(magnetLink, screenshot) {
                 continue: true,
                 autoplay: true,
                 subtitles: false,
-                embed: false
-            }
+				embed: false,
+            },
         });
-    }
+    };
 
-    // если SDK уже загружен
-    if (typeof window.webtor.push === "function") {
-        start();
-    } else {
-        // ждём событие, которое кидает скрипт при загрузке
-        window.addEventListener("webtorready", start, { once: true });
-    }
+    img.onerror = function () {
+        
+        let playerHeight = Math.round(containerWidth / (16 / 9));
+        playerContainer.style.height = playerHeight + "px";
+
+
+        let player = document.createElement("div");
+        player.id = "webtor-player";
+        playerContainer.appendChild(player);
+
+
+        window.webtor = window.webtor || [];
+        window.webtor.push({
+            id: "webtor-player",
+            magnet: magnetLink,
+            width: "100%",
+            height: playerHeight + "px",
+            features: {
+                continue: true,
+                autoplay: true,
+                subtitles: true,
+            },
+        });
+    };
 }
 
 
