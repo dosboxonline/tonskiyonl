@@ -717,14 +717,11 @@ addMetaTag("twitter:description", movieDescription);
 addMetaTag("twitter:image", movieImage);
 addMetaTag("twitter:url", movieUrl);
 
-
-
-
-
-
-                if (magnetLink) {
-                    setTimeout(() => loadWebtorPlayer(magnetLink, screenshot), 100);
-                }
+if (magnetLink) {
+    setTimeout(function () {
+        loadWebtorPlayer(magnetLink, screenshot);
+    }, 1500);
+}
             } else {
                 
                 showError();
@@ -735,8 +732,6 @@ addMetaTag("twitter:url", movieUrl);
             showError();
         });
 }
-
-
 
 function displayMovie(movie, cast, genres, description, rating) {
     let movieHtml = `
