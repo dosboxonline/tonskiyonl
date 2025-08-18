@@ -8,7 +8,8 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-	<script async src="https://cdn.jsdelivr.net/npm/@webtor/player-sdk-js/dist/index.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@webtor/player-sdk-js/dist/index.min.js"
+        onload="window.dispatchEvent(new Event('webtorready'))"></script>
 	<style>
 html {
 overflow-y: scroll;
@@ -525,17 +526,24 @@ const torrentsAll = Array.isArray(movie.torrents) ? movie.torrents : [];
 let filtered = torrentsAll.filter(t =>
   t &&
   typeof t.hash === "string" &&
-  (t.seeds || 0) > 0 &&
-  !/2160|4k|3d/i.test(String(t.quality || ""))
+  (t.video_codec || "").toLowerCase() === "x264" &&
+  !/2160p|3d/i.test(String(t.quality || ""))
 );
 
 let bestTorrent = null;
 
-let torrents1080 = filtered.filter(t => /1080p/i.test(t.quality));
-if (torrents1080.length > 0) {
-  bestTorrent = torrents1080.sort((a, b) => (b.seeds || 0) - (a.seeds || 0))[0];
-} else if (filtered.length > 0) {
-  bestTorrent = filtered.sort((a, b) => (b.seeds || 0) - (a.seeds || 0))[0];
+if (filtered.length > 0) {
+  bestTorrent = filtered.sort((a, b) => {
+    const scoreA = (a.seeds || 0) + (a.peers || 0);
+    const scoreB = (b.seeds || 0) + (b.peers || 0);
+
+    if (scoreA !== scoreB) {
+      return scoreB - scoreA;
+    }
+	
+    const rank = q => (/1080p/i.test(q) ? 1 : /720p/i.test(q) ? 2 : /480p/i.test(q) ? 3 : 4);
+    return rank(a.quality) - rank(b.quality);
+  })[0];
 }
 
 console.log("bestTorrent:", bestTorrent);
@@ -794,26 +802,18 @@ function goBack() {
 }
 
 function loadWebtorPlayer(magnetLink, screenshot) {
-    
-
     let playerContainer = document.getElementById("player-container");
     if (!playerContainer) return;
 
     let containerWidth = playerContainer.clientWidth || window.innerWidth;
+    let playerHeight = Math.round(containerWidth / (16 / 9));
+    playerContainer.style.height = playerHeight + "px";
 
+    let player = document.createElement("div");
+    player.id = "webtor-player";
+    playerContainer.appendChild(player);
 
-    let img = new Image();
-    img.src = screenshot;
-    img.onload = function () {
-        let aspectRatio = img.naturalWidth / img.naturalHeight;
-        let playerHeight = Math.round(containerWidth / aspectRatio);
-
-        playerContainer.style.height = playerHeight + "px";
-
-        let player = document.createElement("div");
-        player.id = "webtor-player";
-        playerContainer.appendChild(player);
-
+    function start() {
         window.webtor = window.webtor || [];
         window.webtor.push({
             id: "webtor-player",
@@ -825,35 +825,18 @@ function loadWebtorPlayer(magnetLink, screenshot) {
                 continue: true,
                 autoplay: true,
                 subtitles: false,
-				embed: false,
-            },
+                embed: false
+            }
         });
-    };
+    }
 
-    img.onerror = function () {
-        
-        let playerHeight = Math.round(containerWidth / (16 / 9));
-        playerContainer.style.height = playerHeight + "px";
-
-
-        let player = document.createElement("div");
-        player.id = "webtor-player";
-        playerContainer.appendChild(player);
-
-
-        window.webtor = window.webtor || [];
-        window.webtor.push({
-            id: "webtor-player",
-            magnet: magnetLink,
-            width: "100%",
-            height: playerHeight + "px",
-            features: {
-                continue: true,
-                autoplay: true,
-                subtitles: true,
-            },
-        });
-    };
+    // если SDK уже загружен
+    if (typeof window.webtor.push === "function") {
+        start();
+    } else {
+        // ждём событие, которое кидает скрипт при загрузке
+        window.addEventListener("webtorready", start, { once: true });
+    }
 }
 
 
