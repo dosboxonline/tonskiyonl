@@ -726,6 +726,14 @@ if (bestTorrent && bestTorrent.hash) {
 } else {
     showError();
 }
+            } else {
+                showError();
+            }
+        })
+        .catch(error => {
+            showError();
+        });
+}
 
 function displayMovie(movie, cast, genres, description, rating) {
     let movieHtml = `
