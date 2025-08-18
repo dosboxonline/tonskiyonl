@@ -520,48 +520,25 @@ let description = movie.description_full
 
 let rating = movie.rating ? `${movie.rating}` : "N/A";
 
-const candidates = (movie.torrents || []).filter(t => !/2160|4k/i.test(t.quality || ""));
+const torrentsAll = Array.isArray(movie.torrents) ? movie.torrents : [];
 
-const qualityRank = (q) => {
-  const v = String(q || "").toLowerCase();
-  if (v.includes("1080")) return 3;
-  if (v.includes("720"))  return 2;
-  if (v.includes("480"))  return 1;
-  return 0;
-};
+let filtered = torrentsAll.filter(t =>
+  t &&
+  typeof t.hash === "string" &&
+  (t.seeds || 0) > 0 &&
+  !/2160|4k|3d/i.test(String(t.quality || ""))
+);
 
-const typeRank = (t) => {
-  const v = String(t || "").toLowerCase();
-  if (v.includes("bluray")) return 2;
-  if (v === "web" || v.includes("web-dl") || v.includes("webrip")) return 1;
-  return 0;
-};
+let bestTorrent = null;
 
-let bestTorrent = candidates.reduce((best, t) => {
-  if (!best) return t;
+let torrents1080 = filtered.filter(t => /1080p/i.test(t.quality));
+if (torrents1080.length > 0) {
+  bestTorrent = torrents1080.sort((a, b) => (b.seeds || 0) - (a.seeds || 0))[0];
+} else if (filtered.length > 0) {
+  bestTorrent = filtered.sort((a, b) => (b.seeds || 0) - (a.seeds || 0))[0];
+}
 
-  const scoreT = (t.seeds || 0) + (t.peers || 0);
-  const scoreB = (best.seeds || 0) + (best.peers || 0);
-  if (scoreT !== scoreB) return scoreT > scoreB ? t : best;
-
-  const qT = qualityRank(t.quality);
-  const qB = qualityRank(best.quality);
-  if (qT !== qB) return qT > qB ? t : best;
-
-  const tyT = typeRank(t.type);
-  const tyB = typeRank(best.type);
-  if (tyT !== tyB) return tyT > tyB ? t : best;
-
-  const sizeT = t.size_bytes ?? 0;
-  const sizeB = best.size_bytes ?? 0;
-  if (sizeT !== sizeB) return sizeT > sizeB ? t : best;
-
-  return (t.seeds || 0) > (best.seeds || 0) ? t : best;
-}, null);
-
-let magnetLink = bestTorrent 
-  ? `magnet:?xt=urn:btih:${bestTorrent.hash}&dn=${encodeURIComponent(movie.title)}`
-  : "";
+console.log("bestTorrent:", bestTorrent);
 
 let screenshot = movie.large_screenshot_image2 
   || movie.large_screenshot_image1 
