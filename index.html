@@ -604,27 +604,11 @@ let trackers = [
                 ];
                 let trackerParams = trackers.map(tracker => `&tr=${encodeURIComponent(tracker)}`).join("");
 
-                let preferredQualities = ["1080p", "720p", "480p"];
-
-let bestTorrent = movie.torrents
-    .filter(t =>
-        t.video_codec && t.video_codec.toLowerCase() === "x264" &&
-        preferredQualities.includes(t.quality)
-    )
-    .reduce((max, torrent) => {
-        const currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
-        const maxScore = (max?.seeds || 0) + (max?.peers || 0);
-
-        if (currentScore > maxScore) {
-            return torrent;
-        } else if (currentScore === maxScore) {
-            return preferredQualities.indexOf(torrent.quality) <
-                   preferredQualities.indexOf(max.quality)
-                   ? torrent : max;
-        } else {
-            return max;
-        }
-    }, null);
+                let bestTorrent = movie.torrents.reduce((max, torrent) => {
+    const currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
+    const maxScore = (max?.seeds || 0) + (max?.peers || 0);
+    return currentScore > maxScore ? torrent : max;
+}, null);
 
                 let magnetLink = bestTorrent ? 
                     `magnet:?xt=urn:btih:${bestTorrent.hash}&dn=${encodeURIComponent(movie.title)}${trackerParams}`
