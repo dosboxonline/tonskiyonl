@@ -520,99 +520,19 @@ let description = movie.description_full
 
                 let rating = movie.rating ? `${movie.rating}` : "N/A";
 
-let trackers = [
-"udp://exodus.desync.com:6969/announce",
-"udp://tracker.cyberia.is:6969/announce",
-"udp://open.stealth.si:80/announce",
-"udp://tracker.publichd.eu:6969/announ​ce",
-"udp://tracker.openbittorrent.com:80/announce",
-"udp://torrentclub.tech:6969/announce",
-"udp://tracker.prq.to:6969/announce",
-"udp://9.rarbg.to:2730/announce",
-"udp://tracker.qt.is:6969/announce",
-"udp://9.rarbg.to:2710/announce",
-"udp://tracker.pomf.se:80/announce",
-"udp://tracker.pirateparty.gr:6969/announce",
-"udp://tracker.1337x.org:80/annou​nce",
-"udp://9.rarbg.me:6969/announce",
-"udp://9.rarbg.me:2730/announce",
-"udp://tracker.port443.xyz:6969/announce",
-"udp://tracker.justseed.it:1337/announce",
-"udp://inferno.demonoid.pw:3418/announce",
-"udp://tracker.ex.ua:80/announce",
-"udp://tracker.moeking.me:6969/announce",
-"udp://ipv4.tracker.harry.lu:80/announce",
-"udp://open.demonii.com:1337/announce",
-"udp://retracker.lanta-net.ru:2710/announce",
-"udp://tracker.1337x.org:80/announce",
-"udp://zer0day.ch:1337/announce",
-"udp://tracker.yify-torrents.com:6969/announce",
-"udp://tracker.openbittorrent.com:6969/announce",
-"udp://tracker.mg64.net:6969/announce",
-"udp://open.demonii.si:1337/announce",
-"udp://11.rarbg.com:6969/announce",
-"udp://tracker.publichd.eu:6969/announce",
-"udp://tracker.0o.is:6969/announce",
-"udp://p4p.arenabg.ch:1337/announce",
-"udp://asnet.pw:2710/announce",
-"udp://9.rarbg.to:2770/announce",
-"udp://denis.stalker.upeer.me:6969/announce",
-"udp://tracker.opentrackr.org:1337/announce",
-"udp://tracker.ccc.de:80/announce",
-"udp://tracker.dler.org:6969/announce",
-"udp://tracker.cypherpunks.ru:6969/announce",
-"udp://bt.xxx-tracker.com:2710/announce",
-"udp://9.rarbg.me:2970/announce",
-"udp://tracker.trackerfix.com:80/announce",
-"udp://p4p.arenabg.com:1337/announce",
-"udp://9.rarbg.me:2740/announce",
-"udp://tracker.zer0day.to:1337/announce",
-"udp://tracker.vanitycore.co:6969/announce",
-"udp://tracker.police.maori.nz:6969/an​nounce",
-"udp://tracker.blackunicorn.xyz:6969/announce",
-"udp://ipv6.open-internet.nl:6969/announce",
-"udp://tracker.tiny-vps.com:6969/announce",
-"udp://tracker.torrent.eu.org:451/announce",
-"udp://tracker.yify-torrents.com:6969/​announce",
-"udp://tracker.publicbt.com:80/announce",
-"udp://tracker.open-internet.nl:6969/announce",
-"udp://tracker.police.maori.nz:6969/announce",
-"udp://11.rarbg.me:6969/announce",
-"udp://tracker.ds.is:6969/announce",
-"udp://glotorrents.pw:6969/announce",
-"udp://thetracker.org:80/announce",
-"udp://tracker.internetwarriors.net:1337/announce",
-"udp://tracker.coppersurfer.tk:6969/announce",
-"udp://twig.gs:6969/announce",
-"udp://9.rarbg.to:2720/announce",
-"udp://eddie4.nl:6969/announce",
-"udp://open.tracker.cl:1337/announce",
-"udp://shadowshq.yi.org:6969/announce",
-"udp://tracker.coppersurfer.tk:80/announce",
-"udp://9.rarbg.me:2770/announce",
-"udp://9.rarbg.me:2710/announce",
-"udp://denis.stalker.upeer.me:1337/announce",
-"udp://9.rarbg.to:2740/announce",
-"udp://tracker.leechers-paradise.org:6969/announce",
-"udp://ipv6.tracker.harry.lu:80/announce",
-"udp://public.popcorn-tracker.org:6969/announce",
-"udp://tracker.acg.gg:2710/announce",
-"udp://coppersurfer.tk:6969/announce",
-"udp://tracker.istole.it:80/announce",
-"udp://tracker.publicbt.com:6969/announce",
-"udp://9.rarbg.com:2710/announce"
-                ];
-                let trackerParams = trackers.map(tracker => `&tr=${encodeURIComponent(tracker)}`).join("");
+let bestTorrent = movie.torrents.reduce((max, torrent) => {
+    let currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
+    let maxScore = (max?.seeds || 0) + (max?.peers || 0);
 
-                let bestTorrent = movie.torrents.reduce((max, torrent) => {
-    const currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
-    const maxScore = (max?.seeds || 0) + (max?.peers || 0);
+    // Добавляем бонус 1080p
+    if (torrent.quality === "1080p") currentScore += 1;
+    if (max?.quality === "1080p") maxScore += 1;
+
     return currentScore > maxScore ? torrent : max;
 }, null);
 
-                let magnetLink = bestTorrent ? 
-                    `magnet:?xt=urn:btih:${bestTorrent.hash}&dn=${encodeURIComponent(movie.title)}${trackerParams}`
-                    : "";
+
+let torrentFileUrl = bestTorrent ? bestTorrent.url : "";
 
                 let screenshot = movie.large_screenshot_image2 || movie.large_screenshot_image1 || movie.large_screenshot_image3 || movie.medium_cover_image;
 
@@ -770,9 +690,9 @@ addMetaTag("twitter:url", movieUrl);
 
 
 
-                if (magnetLink) {
-                    setTimeout(() => loadWebtorPlayer(magnetLink, screenshot), 100);
-                }
+if (torrentFileUrl) {
+    setTimeout(() => loadWebtorPlayer(torrentFileUrl, screenshot), 100);
+}
             } else {
                 
                 showError();
@@ -867,7 +787,7 @@ function goBack() {
     window.location.href = "/";
 }
 
-function loadWebtorPlayer(magnetLink, screenshot) {
+function loadWebtorPlayer(torrentFileUrl, screenshot) {
     
 
     let playerContainer = document.getElementById("player-container");
@@ -891,7 +811,7 @@ function loadWebtorPlayer(magnetLink, screenshot) {
         window.webtor = window.webtor || [];
         window.webtor.push({
             id: "webtor-player",
-            magnet: magnetLink,
+            torrentUrl: torrentFileUrl,
             width: "100%",
             height: playerHeight + "px",
             poster: screenshot,
@@ -899,7 +819,7 @@ function loadWebtorPlayer(magnetLink, screenshot) {
                 continue: true,
                 autoplay: true,
                 subtitles: false,
-				embed: false,
+				embed: false
             },
         });
     };
@@ -918,13 +838,14 @@ function loadWebtorPlayer(magnetLink, screenshot) {
         window.webtor = window.webtor || [];
         window.webtor.push({
             id: "webtor-player",
-            magnet: magnetLink,
+            torrentUrl: torrentFileUrl,
             width: "100%",
             height: playerHeight + "px",
             features: {
                 continue: true,
                 autoplay: true,
-                subtitles: true,
+                subtitles: false,
+				embed: false
             },
         });
     };
