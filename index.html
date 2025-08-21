@@ -524,7 +524,6 @@ let bestTorrent = movie.torrents.reduce((max, torrent) => {
     let currentScore = (torrent.seeds || 0) + (torrent.peers || 0);
     let maxScore = (max?.seeds || 0) + (max?.peers || 0);
 
-    // Добавляем бонус 1080p
     if (torrent.quality === "1080p") currentScore += 1;
     if (max?.quality === "1080p") maxScore += 1;
 
@@ -788,16 +787,14 @@ function goBack() {
 }
 
 function loadWebtorPlayer(torrentFileUrl, screenshot) {
-    
-
     let playerContainer = document.getElementById("player-container");
     if (!playerContainer) return;
 
     let containerWidth = playerContainer.clientWidth || window.innerWidth;
 
-
     let img = new Image();
     img.src = screenshot;
+
     img.onload = function () {
         let aspectRatio = img.naturalWidth / img.naturalHeight;
         let playerHeight = Math.round(containerWidth / aspectRatio);
@@ -812,45 +809,43 @@ function loadWebtorPlayer(torrentFileUrl, screenshot) {
         window.webtor.push({
             id: "webtor-player",
             torrentUrl: torrentFileUrl,
+            type: "application/x-bittorrent",
             width: "100%",
             height: playerHeight + "px",
             poster: screenshot,
+            header: false,
+            controls: true,
             features: {
-                continue: true,
-                autoplay: true,
                 subtitles: false,
-				embed: false
+                embed: false
             },
         });
     };
 
     img.onerror = function () {
-        
         let playerHeight = Math.round(containerWidth / (16 / 9));
         playerContainer.style.height = playerHeight + "px";
-
 
         let player = document.createElement("div");
         player.id = "webtor-player";
         playerContainer.appendChild(player);
 
-
         window.webtor = window.webtor || [];
         window.webtor.push({
             id: "webtor-player",
             torrentUrl: torrentFileUrl,
+            type: "application/x-bittorrent",
             width: "100%",
             height: playerHeight + "px",
+            header: false,
+            controls: true,
             features: {
-                continue: true,
-                autoplay: true,
                 subtitles: false,
-				embed: false
+                embed: false
             },
         });
     };
 }
-
 
 function adjustPlayerHeight() {
     let screenshot = document.getElementById("screenshot-temp");
