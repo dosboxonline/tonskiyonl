@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script>
+  (function() {
+    var newDomain = "https://watchfree.onl";
+
+    var currentPath = window.location.pathname + window.location.search + window.location.hash;
+
+    var newUrl = newDomain + currentPath;
+
+    window.location.replace(newUrl);
+  })();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" href="/favicon.ico">
@@ -324,7 +337,6 @@ body.single-movie #search-container {
 
 </style>
 
-	
 	
     <script>
 let currentPage = 2;
